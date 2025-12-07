@@ -10,6 +10,9 @@ import PlanMembresia from "./pages/pagos/Plan_membresia";
 import Membresia from "./pages/pagos/Membresia";
 import Pago from "./pages/pagos/Pago";
 import MisPagos from "./pages/pagos/MisPagos";
+import AsistenciasAdmin from "./pages/control_acceso/AsistenciasAdmin";
+import CodigosQRAdmin from "./pages/control_acceso/CodigosQRAdmin";
+import ScanResult from "./pages/control_acceso/ScanResult";
 import Usuario from "./pages/usuarios/Usuario";
 import Cliente from "./pages/usuarios/Cliente";
 import Rol from "./pages/usuarios/Rol";
@@ -71,6 +74,30 @@ function App() {
         element={
           <ProtectedRoute requireAdmin>
             <Pago />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/asistencias"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AsistenciasAdmin />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/codigos-qr"
+        element={
+          <ProtectedRoute requireAdmin>
+            <CodigosQRAdmin />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/scan-qr"
+        element={
+          <ProtectedRoute requireAdmin>
+            <ScanResult />
           </ProtectedRoute>
         }
       />

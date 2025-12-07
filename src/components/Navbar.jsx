@@ -89,6 +89,15 @@ const Navbar = () => {
             { label: "Pagos", path: "/pago" },
           ],
         },
+        {
+          title: "Asistencia y QR",
+          icon: <PaymentIcon fontSize="small" />,
+          items: [
+            { label: "Asistencias", path: "/asistencias" },
+            { label: "Códigos QR", path: "/codigos-qr" },
+            { label: "Validar acceso", path: "/scan-qr" },
+          ],
+        },
       ]
     : isCliente
     ? [
