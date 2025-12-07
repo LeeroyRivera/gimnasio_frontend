@@ -9,9 +9,11 @@ import Equipo from "./pages/inventario/Equipo";
 import PlanMembresia from "./pages/pagos/Plan_membresia";
 import Membresia from "./pages/pagos/Membresia";
 import Pago from "./pages/pagos/Pago";
+import MisPagos from "./pages/pagos/MisPagos";
 import Usuario from "./pages/usuarios/Usuario";
 import Cliente from "./pages/usuarios/Cliente";
 import Rol from "./pages/usuarios/Rol";
+import MiAsistencia from "./pages/control_acceso/MiAsistencia";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 function App() {
@@ -69,6 +71,23 @@ function App() {
         element={
           <ProtectedRoute requireAdmin>
             <Pago />
+          </ProtectedRoute>
+        }
+      />
+      {/* Rutas para cliente autenticado */}
+      <Route
+        path="/mis-pagos"
+        element={
+          <ProtectedRoute>
+            <MisPagos />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/mi-asistencia"
+        element={
+          <ProtectedRoute>
+            <MiAsistencia />
           </ProtectedRoute>
         }
       />
