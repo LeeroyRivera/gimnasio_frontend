@@ -58,6 +58,7 @@ const Navbar = () => {
   };
 
   const isAdmin = user?.rol === "admin";
+  const isCliente = user?.rol === "cliente";
 
   const menuItems = isAdmin
     ? [
@@ -86,6 +87,17 @@ const Navbar = () => {
             { label: "Planes de Membresía", path: "/plan-membresia" },
             { label: "Membresías", path: "/membresia" },
             { label: "Pagos", path: "/pago" },
+          ],
+        },
+      ]
+    : isCliente
+    ? [
+        {
+          title: "Mi historial",
+          icon: <PaymentIcon fontSize="small" />,
+          items: [
+            { label: "Mis pagos", path: "/mis-pagos" },
+            { label: "Mi asistencia", path: "/mi-asistencia" },
           ],
         },
       ]
