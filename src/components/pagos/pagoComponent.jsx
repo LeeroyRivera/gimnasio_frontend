@@ -1,38 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../api/http';
-import VistaPagosComponent from './pagosComponents/vistaPagosComponent';
-import ModalComponent from './pagosComponents/modalComponent';
+import VistaPagosComponent from './pagoComponents/vistaPagosComponent';
+import ModalComponent from './pagoComponents/modalComponent';
+import PagoTable from './pagoComponents/PagoTable';
+import NuevoPago from './pagoComponents/NuevoPago';
 import {
   Box,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Chip,
-  Alert,
-  Typography,
   Container,
-  Stack,
-  Avatar,
-  TablePagination,
   TextField,
   InputAdornment
 } from '@mui/material';
 import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  CloudUpload as CloudUploadIcon,
-  Close as CloseIcon,
-  Payment as PaymentIcon,
-  Receipt as ReceiptIcon,
-  AttachMoney as MoneyIcon,
-  Visibility as VisibilityIcon,
   Search as SearchIcon
 } from '@mui/icons-material';
 
@@ -294,30 +272,12 @@ const Pago = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h4" component="h1" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center' }}>
-            <PaymentIcon sx={{ mr: 2, fontSize: 40 }} color="primary" />
-            Gestión de Pagos
-          </Typography>
-          
-          <Button 
-            variant="contained" 
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => setMostrarModal(true)}
-            size="large"
-          >
-            Nuevo Pago
-          </Button>
-        </Stack>
-      </Box>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
-          {error}
-        </Alert>
-      )}
+      
+      <NuevoPago
+        onOpen={() => setMostrarModal(true)}
+        error={error}
+        onClearError={() => setError('')}
+      />
 
       {/* Campo de búsqueda */}
       <Box sx={{ mb: 3 }}>
@@ -337,129 +297,19 @@ const Pago = () => {
         />
       </Box>
 
-      <TableContainer component={Paper} elevation={3}>
-        <Table>
-          <TableHead sx={{ bgcolor: 'primary.main' }}>
-            <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Comprobante</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Referencia</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Cliente</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Membresía</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Monto</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Método</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Procesado Por</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="center">Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {pagosPaginados.length > 0 ? (
-              pagosPaginados.map((pago) => (
-              <TableRow 
-                key={pago.id}
-                sx={{ '&:hover': { bgcolor: 'action.hover' } }}
-              >
-                <TableCell>
-                  {pago.comprobante ? (
-                    <Avatar 
-                      src={`http://localhost:3000/${pago.comprobante}`}
-                      alt="Comprobante"
-                      variant="rounded"
-                      sx={{ width: 56, height: 56 }}
-                    />
-                  ) : (
-                    <Avatar variant="rounded" sx={{ width: 56, height: 56 }}>
-                      <ReceiptIcon />
-                    </Avatar>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    icon={<ReceiptIcon />}
-                    label={pago.referencia}
-                    size="small"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body1" fontWeight="500">
-                    {pago.membresia?.cliente?.nombre} {pago.membresia?.cliente?.apellido}
-                  </Typography>
-                </TableCell>
-                
-                <TableCell>
-                  <Typography variant="body2">
-                    {pago.membresia?.plan?.nombre_plan}
-                  </Typography>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                   // icon={<MoneyIcon />}
-                    label={`L ${pago.monto?.toLocaleString('es-HN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-                    color="primary"
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    label={pago.metodo_pago}
-                    color={getMetodoPagoColor(pago.metodo_pago)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  {pago.fecha_pago ? new Date(pago.fecha_pago).toLocaleDateString() : 'N/A'}
-                </TableCell>
-                <TableCell>{pago.procesadoPor?.username || 'Sistema'}</TableCell>
-                <TableCell align="center">
-                  <IconButton 
-                    color="info"
-                    onClick={() => verDetallePago(pago)}
-                    size="small"
-                    title="Ver Detalles"
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                  <IconButton 
-                    color="primary"
-                    onClick={() => editarPago(pago)}
-                    size="small"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton 
-                    color="error"
-                    onClick={() => eliminarPago(pago.id_pago)}
-                    size="small"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    {busqueda ? 'No se encontraron pagos que coincidan con la búsqueda' : 'No hay pagos registrados'}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <TablePagination
-          component="div"
-          count={pagosFiltrados.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 15, 25]}
-          labelRowsPerPage="Filas por página:"
-          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
-        />
-      </TableContainer>
+      <PagoTable
+        data={pagosPaginados}
+        onEdit={editarPago}
+        onDelete={eliminarPago}
+        onViewDetails={verDetallePago}
+        getMetodoPagoColor={getMetodoPagoColor}
+        busqueda={busqueda}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        totalCount={pagosFiltrados.length}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
 
       {/* COMPONENTE MODAL DE INSERTAR/EDITAR */}
       <ModalComponent

@@ -2,46 +2,14 @@ import React, { useState, useEffect } from 'react';
 import api from '../../api/http';
 import {
   Box,
-  Button,
   TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-  Chip,
-  Alert,
-  Typography,
-  Grid,
   Container,
-  Stack,
-  Avatar,
-  MenuItem,
-  Divider,
-  Switch,
-  FormControlLabel,
-  TablePagination,
   InputAdornment
 } from '@mui/material';
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  Close as CloseIcon,
-  Person as PersonIcon,
-  AccountCircle as UserIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  Lock as LockIcon,
-  Search as SearchIcon
-} from '@mui/icons-material';
+import { Search as SearchIcon } from '@mui/icons-material';
+import NuevoUsuario from './UsuarioComponents/NuevoUsuario';
+import UsuarioTable from './UsuarioComponents/UsuarioTable';
+import UsuarioModal from './UsuarioComponents/UsuarioModal';
 
 const Usuario = () => {
   const [usuarios, setUsuarios] = useState([]);
@@ -264,30 +232,11 @@ const Usuario = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Box sx={{ mb: 4 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography variant="h4" component="h1" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center' }}>
-            <UserIcon sx={{ mr: 2, fontSize: 40 }} color="primary" />
-            Gestión de Usuarios
-          </Typography>
-          
-          <Button 
-            variant="contained" 
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={() => setMostrarModal(true)}
-            size="large"
-          >
-            Nuevo Usuario
-          </Button>
-        </Stack>
-      </Box>
-
-      {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => setError('')}>
-          {error}
-        </Alert>
-      )}
+      <NuevoUsuario
+        onOpen={() => setMostrarModal(true)}
+        error={error}
+        onClearError={() => setError('')}
+      />
 
       {/* Campo de búsqueda */}
       <Box sx={{ mb: 3 }}>
@@ -307,397 +256,31 @@ const Usuario = () => {
         />
       </Box>
 
-      <TableContainer component={Paper} elevation={3}>
-        <Table>
-          <TableHead sx={{ bgcolor: 'primary.main' }}>
-            <TableRow>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Usuario</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Cliente</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Email</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Teléfono</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Rol</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Estado</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha Registro</TableCell>
-              <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="center">Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {usuariosPaginados.length > 0 ? (
-              usuariosPaginados.map((usuario) => (
-              <TableRow 
-                key={usuario.id_usuario}
-                sx={{ '&:hover': { bgcolor: 'action.hover' } }}
-              >
-                <TableCell>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
-                      <UserIcon />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="body1" fontWeight="600">
-                        {usuario.username}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        ID: {usuario.id_usuario}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </TableCell>
-                <TableCell>
-                  {usuario.Cliente ? (
-                    <Typography variant="body2">
-                      {usuario.Cliente.nombre} {usuario.Cliente.apellido}
-                    </Typography>
-                  ) : (
-                    <Chip label="Sin cliente" size="small" variant="outlined" />
-                  )}
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    icon={<EmailIcon />}
-                    label={usuario.email}
-                    size="small"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    icon={<PhoneIcon />}
-                    label={usuario.telefono || 'N/A'}
-                    size="small"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    label={roles.find(r => r.id_rol === usuario.id_rol)?.nombre || 'N/A'}
-                    size="small"
-                    color="info"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip 
-                    label={usuario.estado}
-                    color={getEstadoColor(usuario.estado)}
-                    size="small"
-                  />
-                </TableCell>
-                <TableCell>
-                  {usuario.fecha_registro ? new Date(usuario.fecha_registro).toLocaleDateString() : 'N/A'}
-                </TableCell>
-                <TableCell align="center">
-                  <IconButton 
-                    color="primary"
-                    onClick={() => editarUsuario(usuario)}
-                    size="small"
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton 
-                    color="error"
-                    onClick={() => eliminarUsuario(usuario.id_usuario)}
-                    size="small"
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
-                  <Typography variant="body1" color="text.secondary">
-                    {busqueda ? 'No se encontraron usuarios que coincidan con la búsqueda' : 'No hay usuarios registrados'}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-        <TablePagination
-          component="div"
-          count={usuariosFiltrados.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          rowsPerPageOptions={[5, 10, 15, 25]}
-          labelRowsPerPage="Filas por página:"
-          labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
-        />
-      </TableContainer>
+      <UsuarioTable
+        data={usuariosPaginados}
+        onEdit={editarUsuario}
+        onDelete={eliminarUsuario}
+        roles={roles}
+        getEstadoColor={getEstadoColor}
+        busqueda={busqueda}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        totalCount={usuariosFiltrados.length}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
 
-      <Dialog 
-        open={mostrarModal} 
+      <UsuarioModal
+        open={mostrarModal}
         onClose={cerrarModal}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h5">
-              {usuarioSeleccionado ? 'Editar Usuario' : 'Nuevo Usuario'}
-            </Typography>
-            <IconButton onClick={cerrarModal} size="small">
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-        </DialogTitle>
-        
-        <DialogContent dividers>
-          {error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              <Typography variant="body2" component="pre" sx={{ whiteSpace: 'pre-wrap' }}>
-                {error}
-              </Typography>
-            </Alert>
-          )}
-          
-          <Box component="form" onSubmit={handleSubmit}>
-            {/* Datos de Usuario */}
-            <Typography variant="h6" sx={{ mb: 2, mt: 1 }}>
-              Información de la Cuenta
-            </Typography>
-            
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  label="Nombre de Usuario"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  disabled={usuarioSeleccionado !== null}
-                  helperText={usuarioSeleccionado ? "No se puede modificar" : ""}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required={!usuarioSeleccionado}
-                  type="password"
-                  label="Contraseña"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  helperText={usuarioSeleccionado ? "Dejar vacío para no cambiar" : "Mínimo 8 caracteres"}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  required
-                  type="email"
-                  label="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  InputProps={{
-                    startAdornment: <EmailIcon sx={{ mr: 1, color: 'action.active' }} />
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Teléfono"
-                  name="telefono"
-                  value={formData.telefono}
-                  onChange={handleInputChange}
-                  InputProps={{
-                    startAdornment: <PhoneIcon sx={{ mr: 1, color: 'action.active' }} />
-                  }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  type="date"
-                  label="Fecha de Nacimiento"
-                  name="fecha_nacimiento"
-                  value={formData.fecha_nacimiento}
-                  onChange={handleInputChange}
-                  InputLabelProps={{ shrink: true }}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  select
-                  label="Género"
-                  name="genero"
-                  value={formData.genero}
-                  onChange={handleInputChange}
-                >
-                  <MenuItem value="">Seleccione</MenuItem>
-                  <MenuItem value="M">Masculino</MenuItem>
-                  <MenuItem value="F">Femenino</MenuItem>
-                  <MenuItem value="Otros">Otros</MenuItem>
-                </TextField>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  select
-                  required
-                  label="Rol"
-                  name="id_rol"
-                  value={formData.id_rol}
-                  onChange={handleInputChange}
-                >
-                  <MenuItem value="">Seleccione un rol</MenuItem>
-                  {roles.map(rol => (
-                    <MenuItem key={rol.id_rol} value={rol.id_rol}>
-                      {rol.nombre}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  select
-                  label="Estado"
-                  name="estado"
-                  value={formData.estado}
-                  onChange={handleInputChange}
-                >
-                  <MenuItem value="activo">Activo</MenuItem>
-                  <MenuItem value="inactivo">Inactivo</MenuItem>
-                  <MenuItem value="suspendido">Suspendido</MenuItem>
-                </TextField>
-              </Grid>
-            </Grid>
-
-            {!usuarioSeleccionado && (
-              <>
-                <Divider sx={{ my: 3 }} />
-
-                {/* Datos de Cliente */}
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Información del Cliente
-                </Typography>
-                
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      required
-                      label="Nombre"
-                      name="nombre"
-                      value={formData.cliente.nombre}
-                      onChange={handleClienteChange}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      required
-                      label="Apellido"
-                      name="apellido"
-                      value={formData.cliente.apellido}
-                      onChange={handleClienteChange}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      fullWidth
-                      label="Tipo de Sangre"
-                      name="tipo_sangre"
-                      value={formData.cliente.tipo_sangre}
-                      onChange={handleClienteChange}
-                      placeholder="A+, O-, etc."
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      fullWidth
-                      type="number"
-                      label="Peso (kg)"
-                      name="peso_actual"
-                      value={formData.cliente.peso_actual}
-                      onChange={handleClienteChange}
-                      inputProps={{ step: "0.01" }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      fullWidth
-                      type="number"
-                      label="Altura (m)"
-                      name="altura"
-                      value={formData.cliente.altura}
-                      onChange={handleClienteChange}
-                      inputProps={{ step: "0.01" }}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      multiline
-                      rows={2}
-                      label="Condiciones Médicas"
-                      name="condiciones_medicas"
-                      value={formData.cliente.condiciones_medicas}
-                      onChange={handleClienteChange}
-                      placeholder="Alergias, enfermedades, lesiones, etc."
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Contacto de Emergencia"
-                      name="contacto_emergencia"
-                      value={formData.cliente.contacto_emergencia}
-                      onChange={handleClienteChange}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Teléfono de Emergencia"
-                      name="telefono_emergencia"
-                      value={formData.cliente.telefono_emergencia}
-                      onChange={handleClienteChange}
-                    />
-                  </Grid>
-                </Grid>
-              </>
-            )}
-          </Box>
-        </DialogContent>
-
-        <DialogActions sx={{ p: 2 }}>
-          <Button 
-            onClick={cerrarModal}
-            variant="outlined"
-          >
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleSubmit}
-            variant="contained"
-            color="primary"
-          >
-            {usuarioSeleccionado ? 'Actualizar' : 'Registrar'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+        formData={formData}
+        onChange={handleInputChange}
+        onClienteChange={handleClienteChange}
+        onSubmit={handleSubmit}
+        error={error}
+        roles={roles}
+        usuarioSeleccionado={usuarioSeleccionado}
+      />
     </Container>
   );
 };
