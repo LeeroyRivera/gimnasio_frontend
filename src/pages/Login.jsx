@@ -38,6 +38,7 @@ const Login = () => {
 
     try {
       const response = await api.post("/api/autenticacion/login", formData);
+      console.log("Respuesta login:", response.data);
 
       const { token, user } = response.data || {};
 
