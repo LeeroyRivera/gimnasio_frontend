@@ -254,7 +254,9 @@ const CodigosQRAdmin = () => {
                 const pngUrl = canvas.toDataURL("image/png");
                 const link = document.createElement("a");
                 link.href = pngUrl;
-                link.download = `qr-${qrSeleccionado?.codigo_qr || "codigo"}.png`;
+                link.download = `qr-${
+                  qrSeleccionado?.codigo_qr || "codigo"
+                }.png`;
                 link.click();
               }}
             >

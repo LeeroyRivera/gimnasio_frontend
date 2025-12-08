@@ -105,6 +105,7 @@ const ScanResult = () => {
       const response = await api.post("/api/control-acceso/asistencia/qr", {
         id_usuario: Number(form.id_usuario),
         codigo_qr: form.codigo_qr.trim(),
+        origen: "admin-manual",
       });
 
       // 201 = entrada registrada, 200 = salida registrada

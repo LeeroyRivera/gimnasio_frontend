@@ -13,6 +13,7 @@ import MisPagos from "./pages/pagos/MisPagos";
 import AsistenciasAdmin from "./pages/control_acceso/AsistenciasAdmin";
 import CodigosQRAdmin from "./pages/control_acceso/CodigosQRAdmin";
 import ScanResult from "./pages/control_acceso/ScanResult";
+import ScanCliente from "./pages/control_acceso/ScanCliente";
 import Usuario from "./pages/usuarios/Usuario";
 import Cliente from "./pages/usuarios/Cliente";
 import Rol from "./pages/usuarios/Rol";
@@ -115,6 +116,14 @@ function App() {
         element={
           <ProtectedRoute>
             <MiAsistencia />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/scan-cliente"
+        element={
+          <ProtectedRoute>
+            <ScanCliente />
           </ProtectedRoute>
         }
       />

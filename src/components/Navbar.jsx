@@ -102,11 +102,12 @@ const Navbar = () => {
     : isCliente
     ? [
         {
-          title: "Mi historial",
+          title: "Mi cuenta",
           icon: <PaymentIcon fontSize="small" />,
           items: [
             { label: "Mis pagos", path: "/mis-pagos" },
             { label: "Mi asistencia", path: "/mi-asistencia" },
+            { label: "Escanear QR", path: "/scan-cliente" },
           ],
         },
       ]
