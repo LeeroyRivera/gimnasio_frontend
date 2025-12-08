@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import api from '../../api/http';
-import VistaPagosComponent from './pagoComponents/vistaPagosComponent';
-import ModalComponent from './pagoComponents/modalComponent';
-import PagoTable from './pagoComponents/PagoTable';
-import NuevoPago from './pagoComponents/NuevoPago';
-import {
-  Box,
-  Container,
-  TextField,
-  InputAdornment
-} from '@mui/material';
-import {
-  Search as SearchIcon
-} from '@mui/icons-material';
+import React, { useState, useEffect } from "react";
+import api from "../../api/http";
+import VistaPagosComponent from "./pagoComponents/vistaPagosComponent";
+import ModalComponent from "./pagoComponents/modalComponent";
+import PagoTable from "./pagoComponents/PagoTable";
+import NuevoPago from "./pagoComponents/NuevoPago";
+import { Box, Container, TextField, InputAdornment } from "@mui/material";
+import { Search as SearchIcon } from "@mui/icons-material";
 
 const Pago = () => {
   const [pagos, setPagos] = useState([]);
@@ -22,19 +15,19 @@ const Pago = () => {
   const [pagoSeleccionado, setPagoSeleccionado] = useState(null);
   const [pagoDetalle, setPagoDetalle] = useState(null);
   const [formData, setFormData] = useState({
-    id_membresia: '',
-    metodo_pago: 'Efectivo',
-    notas: ''
+    id_membresia: "",
+    metodo_pago: "Efectivo",
+    notas: "",
   });
   const [comprobanteFile, setComprobanteFile] = useState(null);
   const [comprobantePreview, setComprobantePreview] = useState(null);
   const [dragActive, setDragActive] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Estados para paginación y búsqueda
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [busqueda, setBusqueda] = useState('');
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
     cargarPagos();
@@ -43,23 +36,23 @@ const Pago = () => {
 
   const cargarPagos = async () => {
     try {
-      const response = await api.get('/api/pagos/pagos/listar');
-      console.log('Pagos cargados:', response.data);
-      console.log('Primer pago:', response.data[0]);
+      const response = await api.get("/api/pagos/pagos/listar");
+      console.log("Pagos cargados:", response.data);
+      console.log("Primer pago:", response.data[0]);
       setPagos(response.data);
     } catch (error) {
-      console.error('Error al cargar pagos:', error);
-      setError('Error al cargar pagos');
+      console.error("Error al cargar pagos:", error);
+      setError("Error al cargar pagos");
     }
   };
 
   const cargarMembresias = async () => {
     try {
-      const response = await api.get('/api/pagos/membresias/listar');
+      const response = await api.get("/api/pagos/membresias/listar");
       setMembresias(response.data);
     } catch (error) {
-      console.error('Error al cargar membresías:', error);
-      setError('Error al cargar membresías');
+      console.error("Error al cargar membresías:", error);
+      setError("Error al cargar membresías");
     }
   };
 
@@ -69,7 +62,7 @@ const Pago = () => {
   };
 
   const handleComprobanteChange = (file) => {
-    if (file && file.type.startsWith('image/')) {
+    if (file && file.type.startsWith("image/")) {
       setComprobanteFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -77,7 +70,7 @@ const Pago = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      setError('Por favor selecciona un archivo de imagen válido');
+      setError("Por favor selecciona un archivo de imagen válido");
     }
   };
 
@@ -95,7 +88,7 @@ const Pago = () => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleComprobanteChange(e.dataTransfer.files[0]);
     }
@@ -114,54 +107,63 @@ const Pago = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     try {
       const formDataToSend = new FormData();
-      
+
       // Agregar campos del pago (solo los que tienen valor válido)
       //aqui con keys se refiere a cada campo del formulario
-      Object.keys(formData).forEach(campo => {
+      Object.keys(formData).forEach((campo) => {
         const value = formData[campo];
-        if (value !== '' && value !== null && value !== undefined) {
+        if (value !== "" && value !== null && value !== undefined) {
           formDataToSend.append(campo, value);
         }
       });
 
       // Agregar comprobante si existe
       if (comprobanteFile) {
-        formDataToSend.append('comprobante', comprobanteFile);
+        formDataToSend.append("comprobante", comprobanteFile);
       }
 
       if (pagoSeleccionado) {
         // Editar pago - enviar solo los datos sin comprobante
-        await api.put(`/api/pagos/pagos/editar?id=${pagoSeleccionado.id}`, formData);
-        
+        await api.put(
+          `/api/pagos/pagos/editar?id=${pagoSeleccionado.id}`,
+          formData
+        );
+
         // Si hay nuevo comprobante, subirlo por separado
         if (comprobanteFile) {
           const formDataComprobante = new FormData();
-          formDataComprobante.append('comprobante', comprobanteFile);
-          await api.post(`/api/pagos/pagos/comprobante?id=${pagoSeleccionado.id}`, formDataComprobante, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-          });
+          formDataComprobante.append("comprobante", comprobanteFile);
+          await api.post(
+            `/api/pagos/pagos/comprobante?id=${pagoSeleccionado.id}`,
+            formDataComprobante,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
         }
       } else {
         // Crear nuevo pago con comprobante incluido
-        await api.post('/api/pagos/pagos/guardar', formDataToSend, {
-          headers: { 'Content-Type': 'multipart/form-data' }
+        await api.post("/api/pagos/pagos/guardar", formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
       }
-      
+
       cargarPagos();
       cerrarModal();
     } catch (error) {
-      console.error('Error al guardar pago:', error);
+      console.error("Error al guardar pago:", error);
       if (error.response?.data?.errores) {
-        const erroresFormateados = error.response.data.errores.map(e => e.msg).join('\n');
+        const erroresFormateados = error.response.data.errores
+          .map((e) => e.msg)
+          .join("\n");
         setError(erroresFormateados);
       } else if (error.response?.data?.message) {
         setError(error.response.data.message);
       } else {
-        setError('Error al guardar pago');
+        setError("Error al guardar pago");
       }
     }
   };
@@ -169,29 +171,29 @@ const Pago = () => {
   const editarPago = (pago) => {
     setPagoSeleccionado(pago);
     setFormData({
-      id_membresia: pago.id_membresia || '',
-      metodo_pago: pago.metodo_pago || 'Efectivo',
-      notas: pago.notas || ''
+      id_membresia: pago.id_membresia || "",
+      metodo_pago: pago.metodo_pago || "Efectivo",
+      notas: pago.notas || "",
     });
-    
+    const apiBase = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
     if (pago.comprobante) {
-      setComprobantePreview(`http://localhost:3000/${pago.comprobante}`);
+      setComprobantePreview(`${apiBase}/${pago.comprobante}`);
     } else {
       setComprobantePreview(null);
     }
     setComprobanteFile(null);
-    
+
     setMostrarModal(true);
   };
 
   const eliminarPago = async (id) => {
-    if (window.confirm('¿Estás seguro de eliminar este pago?')) {
+    if (window.confirm("¿Estás seguro de eliminar este pago?")) {
       try {
         await api.delete(`/api/pagos/pagos/eliminar?id=${id}`);
         cargarPagos();
       } catch (error) {
-        console.error('Error al eliminar pago:', error);
-        setError('Error al eliminar pago');
+        console.error("Error al eliminar pago:", error);
+        setError("Error al eliminar pago");
       }
     }
   };
@@ -211,32 +213,35 @@ const Pago = () => {
     setMostrarModal(false);
     setPagoSeleccionado(null);
     setFormData({
-      id_membresia: '',
-      metodo_pago: 'Efectivo',
-      notas: ''
+      id_membresia: "",
+      metodo_pago: "Efectivo",
+      notas: "",
     });
     setComprobanteFile(null);
     setComprobantePreview(null);
     setDragActive(false);
-    setError('');
+    setError("");
   };
 
   const getMetodoPagoColor = (metodo) => {
     const colores = {
-      'efectivo': 'success',
-      'tarjeta': 'primary',
-      'transferencia': 'info',
-      'cheque': 'secondary'
+      efectivo: "success",
+      tarjeta: "primary",
+      transferencia: "info",
+      cheque: "secondary",
     };
-    return colores[metodo] || 'default';
+    return colores[metodo] || "default";
   };
 
   // Función para filtrar pagos según la búsqueda
   const pagosFiltrados = pagos.filter((pago) => {
     const terminoBusqueda = busqueda.toLowerCase();
-    const clienteNombre = `${pago.membresia?.cliente?.nombre || ''} ${pago.membresia?.cliente?.apellido || ''}`.toLowerCase();
-    const planNombre = pago.membresia?.plan_membresia?.nombre_plan?.toLowerCase() || '';
-    
+    const clienteNombre = `${pago.membresia?.cliente?.nombre || ""} ${
+      pago.membresia?.cliente?.apellido || ""
+    }`.toLowerCase();
+    const planNombre =
+      pago.membresia?.plan_membresia?.nombre_plan?.toLowerCase() || "";
+
     return (
       pago.referencia?.toLowerCase().includes(terminoBusqueda) ||
       clienteNombre.includes(terminoBusqueda) ||
@@ -272,11 +277,10 @@ const Pago = () => {
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
-      
       <NuevoPago
         onOpen={() => setMostrarModal(true)}
         error={error}
-        onClearError={() => setError('')}
+        onClearError={() => setError("")}
       />
 
       {/* Campo de búsqueda */}
@@ -319,7 +323,7 @@ const Pago = () => {
         formData={formData}
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
-        membresias={membresias.filter(m => m.estado === 'Activa')}
+        membresias={membresias.filter((m) => m.estado === "Activa")}
         error={error}
         comprobanteFile={comprobanteFile}
         comprobantePreview={comprobantePreview}
@@ -331,7 +335,7 @@ const Pago = () => {
       />
 
       {/* COMPONENTE DE VISTA DE DETALLES DEL PAGO */}
-      <VistaPagosComponent 
+      <VistaPagosComponent
         open={mostrarDetalles}
         onClose={cerrarDetalles}
         pagoDetalle={pagoDetalle}

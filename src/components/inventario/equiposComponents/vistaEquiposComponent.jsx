@@ -21,7 +21,7 @@ import {
 const VistaEquiposComponent = ({ open, onClose, equipoDetalle }) => {
     if (!equipoDetalle) return null;
 
-    const getEstadoColor = (estado) => {
+    const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
         const colores = {
             'Excelente': 'success',
             'Bueno': 'info',
@@ -147,8 +147,8 @@ const VistaEquiposComponent = ({ open, onClose, equipoDetalle }) => {
                                 </Typography>
                                 <Divider sx={{ mb: 2 }} />
                                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                    <img 
-                                        src={`http://localhost:3000/${equipoDetalle.foto}`}
+                                    <img
+                                        src={`${API_BASE}/${equipoDetalle.foto}`}
                                         alt={equipoDetalle.nombre_equipo}
                                         style={{ 
                                             maxWidth: '100%', 
@@ -157,7 +157,7 @@ const VistaEquiposComponent = ({ open, onClose, equipoDetalle }) => {
                                             borderRadius: '8px',
                                             cursor: 'pointer'
                                         }}
-                                        onClick={() => window.open(`http://localhost:3000/${equipoDetalle.foto}`, '_blank')}
+                                        onClick={() => window.open(`${API_BASE}/${equipoDetalle.foto}`, '_blank')}
                                     />
                                 </Box>
                                 <Typography variant="caption" display="block" textAlign="center" sx={{ mt: 1 }} color="text.secondary">
