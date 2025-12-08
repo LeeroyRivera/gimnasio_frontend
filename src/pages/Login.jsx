@@ -136,20 +136,6 @@ const Login = () => {
               Contraseña: (la que hayas configurado)
             </Typography>
           </Box>
-
-          <Box sx={{ mt: 2, textAlign: "center" }}>
-            <Typography variant="body2" color="text.secondary">
-              ¿Eres nuevo?
-            </Typography>
-            <Button
-              variant="text"
-              size="small"
-              onClick={() => navigate("/registro")}
-              sx={{ mt: 0.5, textTransform: "none" }}
-            >
-              Crea una cuenta
-            </Button>
-          </Box>
         </Paper>
       </Box>
     </Container>
