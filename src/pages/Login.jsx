@@ -39,8 +39,20 @@ const Login = () => {
     try {
       const response = await api.post("/api/autenticacion/login", formData);
 
+      const { token, user } = response.data || {};
+
+      if (!token) {
+        setError("Respuesta de login inválida: no se recibió token.");
+        return;
+      }
+
+      // Guardar id de usuario en localStorage para usos directos (ej. ScanCliente)
+      if (user?.id_usuario) {
+        localStorage.setItem("id_usuario", String(user.id_usuario));
+      }
+
       // Guardar token y cargar perfil
-      login(response.data.token, () => {
+      login(token, () => {
         navigate("/");
       });
     } catch (error) {

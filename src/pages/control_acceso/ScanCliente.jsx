@@ -16,6 +16,8 @@ import { Html5Qrcode } from "html5-qrcode";
 // Página para que el cliente registre su propia entrada/salida usando el QR vigente
 const ScanCliente = () => {
   const { user } = useAuth();
+  const idUsuarioLocal = localStorage.getItem("id_usuario");
+  const idUsuario = Number(user?.id_usuario ?? idUsuarioLocal);
   const [codigoQr, setCodigoQr] = useState("");
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState(null);
@@ -41,7 +43,7 @@ const ScanCliente = () => {
     setError(null);
     setResultado(null);
 
-    if (!user?.id_usuario) {
+    if (!idUsuario || Number.isNaN(idUsuario)) {
       setError("No se pudo identificar al usuario autenticado.");
       return;
     }
@@ -54,7 +56,7 @@ const ScanCliente = () => {
     try {
       setLoading(true);
       const resp = await api.post("/api/control-acceso/asistencia/qr", {
-        id_usuario: user.id_usuario,
+        id_usuario: idUsuario,
         codigo_qr: codigoQr.trim(),
       });
 
@@ -128,7 +130,7 @@ const ScanCliente = () => {
           try {
             setLoading(true);
             const resp = await api.post("/api/control-acceso/asistencia/qr", {
-              id_usuario: user.id_usuario,
+              id_usuario: idUsuario,
               codigo_qr: decodedText,
             });
 
