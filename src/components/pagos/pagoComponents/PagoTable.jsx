@@ -20,6 +20,8 @@ import {
   Visibility as VisibilityIcon
 } from '@mui/icons-material';
 
+const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+
 const PagoTable = ({
   data,
   onEdit,
@@ -59,7 +61,7 @@ const PagoTable = ({
                 <TableCell>
                   {pago.comprobante ? (
                     <Avatar 
-                      src={`http://localhost:3000/${pago.comprobante}`}
+                      src={`${API_BASE}/${pago.comprobante}`}
                       alt="Comprobante"
                       variant="rounded"
                       sx={{ width: 56, height: 56 }}
