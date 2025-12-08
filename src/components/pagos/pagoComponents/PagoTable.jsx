@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Table,
   TableBody,
@@ -11,16 +11,16 @@ import {
   Chip,
   Typography,
   Avatar,
-  TablePagination
-} from '@mui/material';
+  TablePagination,
+} from "@mui/material";
 import {
   Edit as EditIcon,
   Delete as DeleteIcon,
   Receipt as ReceiptIcon,
-  Visibility as VisibilityIcon
-} from '@mui/icons-material';
+  Visibility as VisibilityIcon,
+} from "@mui/icons-material";
 
-const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
 const PagoTable = ({
   data,
@@ -33,34 +33,55 @@ const PagoTable = ({
   rowsPerPage,
   totalCount,
   onPageChange,
-  onRowsPerPageChange
+  onRowsPerPageChange,
 }) => {
   return (
     <TableContainer component={Paper} elevation={3}>
       <Table>
-        <TableHead sx={{ bgcolor: 'primary.main' }}>
+        <TableHead sx={{ bgcolor: "primary.main" }}>
           <TableRow>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Comprobante</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Referencia</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Cliente</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Membresía</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Monto</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Método</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Procesado Por</TableCell>
-            <TableCell sx={{ color: 'white', fontWeight: 'bold' }} align="center">Acciones</TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Comprobante
+            </TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Referencia
+            </TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Cliente
+            </TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Membresía
+            </TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Monto
+            </TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Método
+            </TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Fecha
+            </TableCell>
+            <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+              Procesado Por
+            </TableCell>
+            <TableCell
+              sx={{ color: "white", fontWeight: "bold" }}
+              align="center"
+            >
+              Acciones
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {data.length > 0 ? (
             data.map((pago) => (
-              <TableRow 
+              <TableRow
                 key={pago.id}
-                sx={{ '&:hover': { bgcolor: 'action.hover' } }}
+                sx={{ "&:hover": { bgcolor: "action.hover" } }}
               >
                 <TableCell>
                   {pago.comprobante ? (
-                    <Avatar 
+                    <Avatar
                       src={`${API_BASE}/${pago.comprobante}`}
                       alt="Comprobante"
                       variant="rounded"
@@ -73,7 +94,7 @@ const PagoTable = ({
                   )}
                 </TableCell>
                 <TableCell>
-                  <Chip 
+                  <Chip
                     icon={<ReceiptIcon />}
                     label={pago.referencia}
                     size="small"
@@ -82,10 +103,11 @@ const PagoTable = ({
                 </TableCell>
                 <TableCell>
                   <Typography variant="body1" fontWeight="500">
-                    {pago.membresia?.cliente?.nombre} {pago.membresia?.cliente?.apellido}
+                    {pago.membresia?.cliente?.nombre}{" "}
+                    {pago.membresia?.cliente?.apellido}
                   </Typography>
                 </TableCell>
-                
+
                 <TableCell>
                   <Typography variant="body2">
                     {pago.membresia?.plan?.nombre_plan}
@@ -93,24 +115,31 @@ const PagoTable = ({
                 </TableCell>
                 <TableCell>
                   <Chip
-                    label={`L ${pago.monto?.toLocaleString('es-HN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+                    label={`L ${pago.monto?.toLocaleString("es-HN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}`}
                     color="primary"
                     size="small"
                   />
                 </TableCell>
                 <TableCell>
-                  <Chip 
+                  <Chip
                     label={pago.metodo_pago}
                     color={getMetodoPagoColor(pago.metodo_pago)}
                     size="small"
                   />
                 </TableCell>
                 <TableCell>
-                  {pago.fecha_pago ? new Date(pago.fecha_pago).toLocaleDateString() : 'N/A'}
+                  {pago.fecha_pago
+                    ? new Date(pago.fecha_pago).toLocaleDateString()
+                    : "N/A"}
                 </TableCell>
-                <TableCell>{pago.procesadoPor?.username || 'Sistema'}</TableCell>
+                <TableCell>
+                  {pago.procesadoPor?.username || "Sistema"}
+                </TableCell>
                 <TableCell align="center">
-                  <IconButton 
+                  <IconButton
                     color="info"
                     onClick={() => onViewDetails(pago)}
                     size="small"
@@ -118,14 +147,14 @@ const PagoTable = ({
                   >
                     <VisibilityIcon />
                   </IconButton>
-                  <IconButton 
+                  <IconButton
                     color="primary"
                     onClick={() => onEdit(pago)}
                     size="small"
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton 
+                  <IconButton
                     color="error"
                     onClick={() => onDelete(pago.id)}
                     size="small"
@@ -139,7 +168,9 @@ const PagoTable = ({
             <TableRow>
               <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
                 <Typography variant="body1" color="text.secondary">
-                  {busqueda ? 'No se encontraron pagos que coincidan con la búsqueda' : 'No hay pagos registrados'}
+                  {busqueda
+                    ? "No se encontraron pagos que coincidan con la búsqueda"
+                    : "No hay pagos registrados"}
                 </Typography>
               </TableCell>
             </TableRow>
@@ -155,7 +186,9 @@ const PagoTable = ({
         onRowsPerPageChange={onRowsPerPageChange}
         rowsPerPageOptions={[5, 10, 15, 25]}
         labelRowsPerPage="Filas por página:"
-        labelDisplayedRows={({ from, to, count }) => `${from}-${to} de ${count}`}
+        labelDisplayedRows={({ from, to, count }) =>
+          `${from}-${to} de ${count}`
+        }
       />
     </TableContainer>
   );
