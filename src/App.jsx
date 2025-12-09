@@ -19,6 +19,7 @@ import Cliente from "./pages/usuarios/Cliente";
 import Rol from "./pages/usuarios/Rol";
 import MiAsistencia from "./pages/control_acceso/MiAsistencia";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import SesionesPage from "./pages/usuarios/SesionesPage";
 
 function App() {
   console.log("App component rendered");
@@ -148,6 +149,14 @@ function App() {
         element={
           <ProtectedRoute requireAdmin>
             <Rol />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/sesiones"
+        element={
+          <ProtectedRoute requireAdmin>
+            <SesionesPage />
           </ProtectedRoute>
         }
       />

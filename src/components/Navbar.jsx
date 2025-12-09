@@ -69,6 +69,7 @@ const Navbar = () => {
             { label: "Usuarios", path: "/usuario" },
             { label: "Clientes", path: "/cliente" },
             { label: "Roles", path: "/rol" },
+            { label: "Sesiones", path: "/sesiones" },
           ],
         },
         {
