@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import api from "../api/http";
+import { useAuth } from "../context/AuthContext.jsx";
 import {
   Box,
   Container,
@@ -26,13 +27,51 @@ import {
   Star as StarIcon,
   LocalOffer as OfferIcon,
 } from "@mui/icons-material";
+import {
+  People as PeopleIcon,
+  AccessTime as AccessTimeIcon,
+  FitnessCenter as FitnessIcon,
+  BarChart as BarChartIcon,
+} from "@mui/icons-material";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 export default function Home() {
   const [planes, setPlanes] = useState([]);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [dashboardError, setDashboardError] = useState("");
+  const { user } = useAuth();
 
   useEffect(() => {
     cargarPlanes();
   }, []);
+
+  useEffect(() => {
+    const cargarDashboard = async () => {
+      if (!user || user.rol !== "admin") return;
+      try {
+        setDashboardLoading(true);
+        setDashboardError("");
+        const resp = await api.get("/api/dashboard/admin/hoy");
+        setDashboardData(resp.data);
+      } catch (error) {
+        console.error("Error al cargar dashboard admin:", error);
+        setDashboardError("No se pudo cargar el dashboard de hoy");
+      } finally {
+        setDashboardLoading(false);
+      }
+    };
+
+    cargarDashboard();
+  }, [user]);
 
   const cargarPlanes = async () => {
     try {
@@ -187,6 +226,153 @@ export default function Home() {
           </Box>
         </Container>
       </Box>
+
+      {/* Dashboard Admin (solo admin) */}
+      {user?.rol === "admin" && (
+        <Container maxWidth="lg" sx={{ pt: 6 }}>
+          <Typography variant="h5" fontWeight={700} gutterBottom>
+            Panel rápido de asistencias (solo administrador)
+          </Typography>
+          {dashboardError && (
+            <Typography color="error" sx={{ mb: 2 }}>
+              {dashboardError}
+            </Typography>
+          )}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12} md={4}>
+              <Card elevation={3} sx={{ borderRadius: 3 }}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 1,
+                    }}
+                  >
+                    <FitnessIcon color="primary" />
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Asistencias totales de hoy
+                    </Typography>
+                  </Box>
+                  <Typography variant="h4" fontWeight={700}>
+                    {dashboardLoading || !dashboardData
+                      ? "-"
+                      : dashboardData.asistenciasTotalesHoy}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card elevation={3} sx={{ borderRadius: 3 }}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 1,
+                    }}
+                  >
+                    <PeopleIcon color="success" />
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Asistencias activas ahora
+                    </Typography>
+                  </Box>
+                  <Typography variant="h4" fontWeight={700}>
+                    {dashboardLoading || !dashboardData
+                      ? "-"
+                      : dashboardData.asistenciasActivasAhora}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card elevation={3} sx={{ borderRadius: 3 }}>
+                <CardContent>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 2,
+                      mb: 1,
+                    }}
+                  >
+                    <AccessTimeIcon color="warning" />
+                    <Typography variant="subtitle2" color="text.secondary">
+                      Promedio de tiempo (minutos)
+                    </Typography>
+                  </Box>
+                  <Typography variant="h4" fontWeight={700}>
+                    {dashboardLoading || !dashboardData
+                      ? "-"
+                      : dashboardData.promedioDuracionMinutosHoy || 0}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          <Paper elevation={3} sx={{ p: 3, borderRadius: 3, mb: 6 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2 }}>
+              <BarChartIcon color="primary" />
+              <Typography variant="h6" fontWeight={600}>
+                Asistencias de hoy por tipo de membresía
+              </Typography>
+              {dashboardData && (
+                <Chip
+                  label={`Total: ${dashboardData.asistenciasTotalesHoy || 0}`}
+                  size="small"
+                  sx={{ ml: "auto" }}
+                />
+              )}
+            </Box>
+
+            <Box sx={{ width: "100%", height: 320 }}>
+              {dashboardLoading || !dashboardData ? (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ textAlign: "center", mt: 10 }}
+                >
+                  Cargando datos...
+                </Typography>
+              ) : dashboardData.porMembresiaHoy?.length ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={dashboardData.porMembresiaHoy}
+                    margin={{
+                      top: 10,
+                      right: 30,
+                      left: 0,
+                      bottom: 40,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis
+                      dataKey="plan"
+                      angle={-20}
+                      textAnchor="end"
+                      interval={0}
+                    />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="total" fill="#1976d2" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ textAlign: "center", mt: 10 }}
+                >
+                  No hay asistencias registradas hoy.
+                </Typography>
+              )}
+            </Box>
+          </Paper>
+        </Container>
+      )}
 
       {/* Tabla de Planes de Membresía */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
