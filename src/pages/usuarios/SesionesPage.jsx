@@ -266,6 +266,7 @@ const SesionesPage = () => {
                 <TableRow>
                   <TableCell>ID Sesión</TableCell>
                   <TableCell>ID Usuario</TableCell>
+                  <TableCell>Usuario</TableCell>
                   <TableCell>Fecha Inicio</TableCell>
                   <TableCell>Fecha Expiración</TableCell>
                   <TableCell>Estado</TableCell>
@@ -285,6 +286,7 @@ const SesionesPage = () => {
                     <TableRow key={s.id_sesion}>
                       <TableCell>{s.id_sesion}</TableCell>
                       <TableCell>{s.id_usuario}</TableCell>
+                      <TableCell>{s.Usuario?.username || "-"}</TableCell>
                       <TableCell>
                         {s.fecha_inicio
                           ? new Date(s.fecha_inicio).toLocaleString()
