@@ -51,8 +51,10 @@ export default function Home() {
   const { user } = useAuth();
 
   useEffect(() => {
-    cargarPlanes();
-  }, []);
+    if (user?.rol === "admin") {
+      cargarPlanes();
+    }
+  }, [user]);
 
   useEffect(() => {
     const cargarDashboard = async () => {
@@ -374,193 +376,211 @@ export default function Home() {
         </Container>
       )}
 
-      {/* Tabla de Planes de Membresía */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Box sx={{ mb: 6, textAlign: "center" }}>
-          <Typography
-            variant="h3"
-            component="h2"
+      {/* Tabla de Planes de Membresía (solo admin) */}
+      {user?.rol === "admin" && (
+        <Container maxWidth="lg" sx={{ py: 8 }}>
+          <Box sx={{ mb: 6, textAlign: "center" }}>
+            <Typography
+              variant="h3"
+              component="h2"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Nuestros Planes de Membresía
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ maxWidth: 600, mx: "auto" }}
+            >
+              Elige el plan que mejor se adapte a tus necesidades y comienza tu
+              transformación hoy mismo
+            </Typography>
+          </Box>
+
+          <TableContainer
+            component={Paper}
+            elevation={4}
             sx={{
-              fontWeight: 700,
-              mb: 2,
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
+              borderRadius: 3,
+              overflow: "hidden",
+              mb: 8,
             }}
           >
-            Nuestros Planes de Membresía
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ maxWidth: 600, mx: "auto" }}
-          >
-            Elige el plan que mejor se adapte a tus necesidades y comienza tu
-            transformación hoy mismo
-          </Typography>
-        </Box>
-
-        <TableContainer
-          component={Paper}
-          elevation={4}
-          sx={{
-            borderRadius: 3,
-            overflow: "hidden",
-            mb: 8,
-          }}
-        >
-          <Table>
-            <TableHead>
-              <TableRow sx={{ bgcolor: "primary.main" }}>
-                <TableCell
-                  sx={{ color: "white", fontWeight: "bold", fontSize: "1rem" }}
-                >
-                  Plan
-                </TableCell>
-                <TableCell
-                  sx={{ color: "white", fontWeight: "bold", fontSize: "1rem" }}
-                >
-                  Descripción
-                </TableCell>
-                <TableCell
-                  sx={{ color: "white", fontWeight: "bold", fontSize: "1rem" }}
-                  align="center"
-                >
-                  Duración
-                </TableCell>
-
-                <TableCell
-                  sx={{ color: "white", fontWeight: "bold", fontSize: "1rem" }}
-                  align="center"
-                >
-                  Estado
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {planes.map((plan) => (
-                <TableRow
-                  key={plan.id}
-                  sx={{
-                    "&:hover": { bgcolor: "action.hover" },
-                    "&:nth-of-type(odd)": { bgcolor: "action.selected" },
-                  }}
-                >
-                  <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight={600}
-                      color="primary"
-                    >
-                      {plan.nombre_plan}
-                    </Typography>
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: "primary.main" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    Plan
                   </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {plan.descripcion}
-                    </Typography>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    Descripción
                   </TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      icon={<ScheduleIcon />}
-                      label={`${plan.duracion_dias} días`}
-                      size="small"
-                      color="info"
-                    />
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                    align="center"
+                  >
+                    Duración
                   </TableCell>
 
-                  <TableCell align="center">
-                    <Chip
-                      label={
-                        plan.estado === "Activo" ? "Disponible" : plan.estado
-                      }
-                      size="small"
-                      color={plan.estado === "Activo" ? "success" : "default"}
-                    />
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                    align="center"
+                  >
+                    Estado
                   </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {planes.map((plan) => (
+                  <TableRow
+                    key={plan.id}
+                    sx={{
+                      "&:hover": { bgcolor: "action.hover" },
+                      "&:nth-of-type(odd)": { bgcolor: "action.selected" },
+                    }}
+                  >
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight={600}
+                        color="primary"
+                      >
+                        {plan.nombre_plan}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {plan.descripcion}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Chip
+                        icon={<ScheduleIcon />}
+                        label={`${plan.duracion_dias} días`}
+                        size="small"
+                        color="info"
+                      />
+                    </TableCell>
 
-        {/* Secciones Informativas */}
-        <Box sx={{ mb: 6, textAlign: "center" }}>
-          <Typography
-            variant="h3"
-            component="h2"
-            sx={{
-              fontWeight: 700,
-              mb: 2,
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              backgroundClip: "text",
-            }}
-          >
-            ¿Por qué elegirnos?
-          </Typography>
-          <Typography
-            variant="body1"
-            color="text.secondary"
-            sx={{ maxWidth: 600, mx: "auto" }}
-          >
-            Conoce todo lo que Gimnasio Aesthetic tiene preparado para ti
-          </Typography>
-        </Box>
+                    <TableCell align="center">
+                      <Chip
+                        label={
+                          plan.estado === "Activo" ? "Disponible" : plan.estado
+                        }
+                        size="small"
+                        color={plan.estado === "Activo" ? "success" : "default"}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-        <Grid container spacing={4}>
-          {seccionesInformativas.map((seccion) => (
-            <Grid item xs={12} sm={6} md={3} key={seccion.id}>
-              <Card
-                elevation={3}
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  transition: "all 0.3s ease",
-                  "&:hover": {
-                    transform: "translateY(-8px)",
-                    boxShadow: "0 12px 24px rgba(102, 126, 234, 0.3)",
-                  },
-                  borderRadius: 3,
-                  overflow: "hidden",
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={seccion.imagen}
-                  alt={seccion.titulo}
+          {/* Secciones Informativas */}
+          <Box sx={{ mb: 6, textAlign: "center" }}>
+            <Typography
+              variant="h3"
+              component="h2"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              ¿Por qué elegirnos?
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ maxWidth: 600, mx: "auto" }}
+            >
+              Conoce todo lo que Gimnasio Aesthetic tiene preparado para ti
+            </Typography>
+          </Box>
+
+          <Grid container spacing={4}>
+            {seccionesInformativas.map((seccion) => (
+              <Grid item xs={12} sm={6} md={3} key={seccion.id}>
+                <Card
+                  elevation={3}
                   sx={{
-                    height: 220,
-                    objectFit: "cover",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: "0 12px 24px rgba(102, 126, 234, 0.3)",
+                    },
+                    borderRadius: 3,
+                    overflow: "hidden",
                   }}
-                />
-                <CardContent sx={{ flexGrow: 1, textAlign: "center", p: 3 }}>
-                  <Box sx={{ mb: 2 }}>{seccion.icono}</Box>
-                  <Typography
-                    variant="h6"
-                    component="h3"
-                    fontWeight={700}
-                    gutterBottom
-                    sx={{ color: "primary.main" }}
-                  >
-                    {seccion.titulo}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.7 }}
-                  >
-                    {seccion.descripcion}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
+                >
+                  <CardMedia
+                    component="img"
+                    image={seccion.imagen}
+                    alt={seccion.titulo}
+                    sx={{
+                      height: 220,
+                      objectFit: "cover",
+                    }}
+                  />
+                  <CardContent sx={{ flexGrow: 1, textAlign: "center", p: 3 }}>
+                    <Box sx={{ mb: 2 }}>{seccion.icono}</Box>
+                    <Typography
+                      variant="h6"
+                      component="h3"
+                      fontWeight={700}
+                      gutterBottom
+                      sx={{ color: "primary.main" }}
+                    >
+                      {seccion.titulo}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ lineHeight: 1.7 }}
+                    >
+                      {seccion.descripcion}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      )}
 
       {/* Footer */}
       <Box
