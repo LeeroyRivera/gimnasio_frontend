@@ -20,6 +20,7 @@ import Rol from "./pages/usuarios/Rol";
 import MiAsistencia from "./pages/control_acceso/MiAsistencia";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import SesionesPage from "./pages/usuarios/SesionesPage";
+import AdminHome from "./pages/AdminHome";
 
 function App() {
   console.log("App component rendered");
@@ -29,6 +30,14 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/registro" element={<Register />} />
       <Route path="/" element={<Home />} />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute requireAdmin>
+            <AdminHome />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Rutas solo admin */}
       <Route

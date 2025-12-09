@@ -66,6 +66,7 @@ const Navbar = () => {
           title: "Gestión de Usuarios",
           icon: <PeopleIcon fontSize="small" />,
           items: [
+            { label: "Dashboard Admin", path: "/admin" },
             { label: "Usuarios", path: "/usuario" },
             { label: "Clientes", path: "/cliente" },
             { label: "Roles", path: "/rol" },
