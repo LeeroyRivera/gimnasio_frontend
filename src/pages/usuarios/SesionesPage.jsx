@@ -32,7 +32,7 @@ const SesionesPage = () => {
     setError("");
     setLoading(true);
     try {
-      const resp = await api.get(`/api/usuarios/sesion/sesiones-todas`);
+      const resp = await api.get(`/api/sesion/sesiones-todas`);
       setTodasSesiones(resp.data || []);
     } catch (err) {
       console.error("Error al cargar todas las sesiones:", err);
