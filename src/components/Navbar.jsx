@@ -24,6 +24,7 @@ import {
   Inventory as InventoryIcon,
   Work as WorkIcon,
   Home as HomeIcon,
+  AccountCircle as AccountCircleIcon,
 } from "@mui/icons-material";
 import { useAuth } from "../context/AuthContext.jsx";
 
@@ -164,7 +165,7 @@ const Navbar = () => {
             </Box>
           </Box>
 
-          {/* Botones de navegación */}
+          {/* Botones de navegación + usuario logueado */}
           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
             {!isMobile ? (
               <>
@@ -223,6 +224,42 @@ const Navbar = () => {
                 >
                   Cerrar Sesión
                 </Button>
+
+                {user && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 1,
+                      pl: 2,
+                      ml: 1,
+                      borderLeft: "1px solid rgba(255,255,255,0.4)",
+                    }}
+                  >
+                    <AccountCircleIcon sx={{ color: "white" }} />
+                    <Box sx={{ textAlign: "left" }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ color: "rgba(255,255,255,0.8)" }}
+                      >
+                        Usuario
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          color: "white",
+                          fontWeight: 600,
+                          maxWidth: 180,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {user.username || user.email}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
               </>
             ) : (
               // Mobile: single menu button that includes navigation and logout

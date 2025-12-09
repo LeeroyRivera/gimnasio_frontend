@@ -51,7 +51,8 @@ export default function Home() {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user?.rol === "admin") {
+    // Cargar planes para cualquier usuario autenticado (admin o cliente)
+    if (user) {
       cargarPlanes();
     }
   }, [user]);
@@ -376,7 +377,7 @@ export default function Home() {
         </Container>
       )}
 
-      {/* Tabla de Planes de Membresía (solo admin) */}
+      {/* Contenido cuando es ADMIN: Dashboard + planes únicamente */}
       {user?.rol === "admin" && (
         <Container maxWidth="lg" sx={{ py: 8 }}>
           <Box sx={{ mb: 6, textAlign: "center" }}>
@@ -503,8 +504,138 @@ export default function Home() {
               </TableBody>
             </Table>
           </TableContainer>
+        </Container>
+      )}
 
-          {/* Secciones Informativas */}
+      {/* Contenido para CLIENTE: planes + ¿por qué elegirnos? */}
+      {user?.rol === "cliente" && (
+        <Container maxWidth="lg" sx={{ py: 8 }}>
+          <Box sx={{ mb: 6, textAlign: "center" }}>
+            <Typography
+              variant="h3"
+              component="h2"
+              sx={{
+                fontWeight: 700,
+                mb: 2,
+                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
+              Nuestros Planes de Membresía
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ maxWidth: 600, mx: "auto" }}
+            >
+              Elige el plan que mejor se adapte a tus necesidades y comienza tu
+              transformación hoy mismo
+            </Typography>
+          </Box>
+
+          <TableContainer
+            component={Paper}
+            elevation={4}
+            sx={{
+              borderRadius: 3,
+              overflow: "hidden",
+              mb: 8,
+            }}
+          >
+            <Table>
+              <TableHead>
+                <TableRow sx={{ bgcolor: "primary.main" }}>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    Plan
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    Descripción
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                    align="center"
+                  >
+                    Duración
+                  </TableCell>
+
+                  <TableCell
+                    sx={{
+                      color: "white",
+                      fontWeight: "bold",
+                      fontSize: "1rem",
+                    }}
+                    align="center"
+                  >
+                    Estado
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {planes.map((plan) => (
+                  <TableRow
+                    key={plan.id}
+                    sx={{
+                      "&:hover": { bgcolor: "action.hover" },
+                      "&:nth-of-type(odd)": { bgcolor: "action.selected" },
+                    }}
+                  >
+                    <TableCell>
+                      <Typography
+                        variant="body1"
+                        fontWeight={600}
+                        color="primary"
+                      >
+                        {plan.nombre_plan}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {plan.descripcion}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="center">
+                      <Chip
+                        icon={<ScheduleIcon />}
+                        label={`${plan.duracion_dias} días`}
+                        size="small"
+                        color="info"
+                      />
+                    </TableCell>
+
+                    <TableCell align="center">
+                      <Chip
+                        label={
+                          plan.estado === "Activo" ? "Disponible" : plan.estado
+                        }
+                        size="small"
+                        color={plan.estado === "Activo" ? "success" : "default"}
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* Secciones Informativas solo para cliente */}
           <Box sx={{ mb: 6, textAlign: "center" }}>
             <Typography
               variant="h3"
