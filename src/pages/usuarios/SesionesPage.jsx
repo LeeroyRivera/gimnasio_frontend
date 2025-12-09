@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import api from "../../api/http";
+import Navbar from "../../components/Navbar";
 import {
   Box,
   Container,
@@ -23,8 +24,23 @@ const SesionesPage = () => {
   const [hasta, setHasta] = useState("");
   const [sesiones, setSesiones] = useState([]);
   const [resumen, setResumen] = useState([]);
+  const [todasSesiones, setTodasSesiones] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const handleCargarTodasSesiones = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const resp = await api.get(`/api/usuarios/sesion/sesiones-todas`);
+      setTodasSesiones(resp.data || []);
+    } catch (err) {
+      console.error("Error al cargar todas las sesiones:", err);
+      setError("Error al cargar todas las sesiones");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleBuscarSesiones = async () => {
     if (!idUsuario) {
@@ -66,8 +82,9 @@ const SesionesPage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fa", py: 4 }}>
-      <Container maxWidth="lg">
+    <Box sx={{ minHeight: "100vh", bgcolor: "#f8f9fa" }}>
+      <Navbar />
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         <Typography variant="h4" fontWeight={700} gutterBottom>
           Sesiones de Usuarios
         </Typography>
@@ -84,7 +101,7 @@ const SesionesPage = () => {
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2 }} elevation={3}>
+            <Paper sx={{ p: 3, borderRadius: 3 }} elevation={3}>
               <Typography variant="h6" gutterBottom>
                 Sesiones por usuario
               </Typography>
@@ -162,7 +179,7 @@ const SesionesPage = () => {
           </Grid>
 
           <Grid item xs={12} md={6}>
-            <Paper sx={{ p: 2 }} elevation={3}>
+            <Paper sx={{ p: 3, borderRadius: 3 }} elevation={3}>
               <Typography variant="h6" gutterBottom>
                 Resumen de sesiones por día
               </Typography>
@@ -220,6 +237,86 @@ const SesionesPage = () => {
             </Paper>
           </Grid>
         </Grid>
+
+        {/* Tabla de todas las sesiones */}
+        <Paper sx={{ p: 3, borderRadius: 3 }} elevation={3}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              mb: 2,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Todas las sesiones registradas
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCargarTodasSesiones}
+              disabled={loading}
+            >
+              Cargar todas
+            </Button>
+          </Box>
+          <TableContainer component={Paper} variant="outlined">
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID Sesión</TableCell>
+                  <TableCell>ID Usuario</TableCell>
+                  <TableCell>Fecha Inicio</TableCell>
+                  <TableCell>Fecha Expiración</TableCell>
+                  <TableCell>Estado</TableCell>
+                  <TableCell>IP</TableCell>
+                  <TableCell>Dispositivo</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {todasSesiones.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center">
+                      No hay sesiones registradas
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  todasSesiones.map((s) => (
+                    <TableRow key={s.id_sesion}>
+                      <TableCell>{s.id_sesion}</TableCell>
+                      <TableCell>{s.id_usuario}</TableCell>
+                      <TableCell>
+                        {s.fecha_inicio
+                          ? new Date(s.fecha_inicio).toLocaleString()
+                          : "-"}
+                      </TableCell>
+                      <TableCell>
+                        {s.fecha_expiracion
+                          ? new Date(s.fecha_expiracion).toLocaleString()
+                          : "-"}
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={s.estado}
+                          size="small"
+                          color={
+                            s.estado === "activa"
+                              ? "success"
+                              : s.estado === "cerrada"
+                              ? "default"
+                              : "warning"
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>{s.ip}</TableCell>
+                      <TableCell>{s.dispositivo}</TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Paper>
       </Container>
     </Box>
   );
